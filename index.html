@@ -559,9 +559,23 @@
     .form-success h4 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
     .form-success p { font-size: 14px; color: var(--muted); }
 
+    /* ─── Coming soon card ──────────────────────────────────────── */
+    .coming-soon-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 36px 40px;
+    }
+    .coming-soon-inner {
+      display: flex; align-items: center; gap: 28px; flex-wrap: wrap;
+    }
+    .coming-soon-icon { font-size: 48px; flex-shrink: 0; }
+    .coming-soon-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .coming-soon-sub { font-size: 15px; color: var(--muted); line-height: 1.65; max-width: 640px; }
+
     @media (max-width: 768px) {
-      .pricing-grid { grid-template-columns: 1fr; }
       .trial-banner { flex-direction: column; }
+      .coming-soon-inner { gap: 16px; }
     }
 
     /* ─── FAQ ───────────────────────────────────────────────────── */
@@ -897,80 +911,29 @@
 <section id="pricing">
   <div class="container">
     <div class="pricing-head reveal">
-      <div class="tag">Pricing</div>
-      <h2 class="section-title">Start free. Scale when ready.</h2>
-      <p class="section-sub">Try ATE for a full month at no cost — no credit card required. Upgrade whenever you're ready.</p>
+      <div class="tag">Early Access</div>
+      <h2 class="section-title">Free while it lasts.</h2>
+      <p class="section-sub">ATE is currently in early access — enjoy full, unrestricted use at no cost while the subscription model is being finalised.</p>
     </div>
 
     <!-- Free trial banner -->
     <div class="trial-banner reveal">
       <div class="trial-banner-left">
-        <h3>🎁 1-Month Free Trial</h3>
-        <p>Get full access to ATE on TradingView — no credit card, no commitment. Just your name, email, and TradingView username.</p>
+        <h3>🎁 Free Early Access</h3>
+        <p>Get full access to ATE on TradingView right now — no credit card, no commitment. Just your name, email, and TradingView username.</p>
       </div>
-      <button class="trial-btn" onclick="openTrialModal()">Start Free Trial →</button>
+      <button class="trial-btn" onclick="openTrialModal()">Get Free Access →</button>
     </div>
 
-    <!-- Paid plans -->
-    <div class="pricing-grid">
-
-      <!-- Monthly -->
-      <div class="pricing-card reveal">
-        <div class="plan-name">Monthly</div>
-        <div class="pricing-badge badge-muted">Flexible</div>
-        <div class="price-amount">$20</div>
-        <div class="price-period">per month · cancel any time</div>
-        <ul class="price-features">
-          <li><span class="check">✓</span> Full ATE indicator (TradingView)</li>
-          <li><span class="check">✓</span> Self-optimising engine</li>
-          <li><span class="check">✓</span> Multi-timeframe dashboard</li>
-          <li><span class="check">✓</span> Dynamic stop-loss</li>
-          <li><span class="check">✓</span> All markets supported</li>
-          <li><span class="check">✓</span> Email support</li>
-        </ul>
-        <a href="#" class="buy-btn buy-btn-outline" onclick="handleBuy(event,'monthly')">Get Monthly Access →</a>
-        <p class="price-note">Billed monthly · cancel any time</p>
+    <!-- Coming soon notice -->
+    <div class="coming-soon-card reveal">
+      <div class="coming-soon-inner">
+        <div class="coming-soon-icon">🚀</div>
+        <div>
+          <h3 class="coming-soon-title">Subscription plans coming soon</h3>
+          <p class="coming-soon-sub">Paid tiers with monthly, annual, and lifetime options are on the way. Early adopters who sign up now will be the first to know — and may receive a special founding-member rate.</p>
+        </div>
       </div>
-
-      <!-- Annual — Featured -->
-      <div class="pricing-card featured reveal">
-        <div class="plan-name">Annual</div>
-        <div class="pricing-badge badge-cyan">⭐ Best Value — Save 17%</div>
-        <div class="price-amount">$200</div>
-        <div class="price-period">per year · ~$16.67/mo</div>
-        <ul class="price-features">
-          <li><span class="check">✓</span> Full ATE indicator (TradingView)</li>
-          <li><span class="check">✓</span> Self-optimising engine</li>
-          <li><span class="check">✓</span> Multi-timeframe dashboard</li>
-          <li><span class="check">✓</span> Dynamic stop-loss</li>
-          <li><span class="check">✓</span> All markets supported</li>
-          <li><span class="check">✓</span> Priority email support</li>
-          <li><span class="check">✓</span> All updates for the year</li>
-        </ul>
-        <a href="#" class="buy-btn buy-btn-primary" onclick="handleBuy(event,'annual')">Get Annual Access →</a>
-        <p class="price-note">Billed annually · 2 months free vs monthly</p>
-      </div>
-
-      <!-- Lifetime -->
-      <div class="pricing-card reveal">
-        <div class="plan-name">Lifetime</div>
-        <div class="pricing-badge badge-gold">🔥 One-Time Forever</div>
-        <div class="price-amount">$2000</div>
-        <div class="price-period">one-time · access never expires</div>
-        <ul class="price-features">
-          <li><span class="check">✓</span> Full ATE indicator (TradingView)</li>
-          <li><span class="check">✓</span> Self-optimising engine</li>
-          <li><span class="check">✓</span> Multi-timeframe dashboard</li>
-          <li><span class="check">✓</span> Dynamic stop-loss</li>
-          <li><span class="check">✓</span> All markets supported</li>
-          <li><span class="check">✓</span> Lifetime priority support</li>
-          <li><span class="check">✓</span> All future updates forever</li>
-          <li><span class="check">✓</span> Never pay again</li>
-        </ul>
-        <a href="#" class="buy-btn buy-btn-outline" onclick="handleBuy(event,'lifetime')">Get Lifetime Access →</a>
-        <p class="price-note">One payment · access never expires</p>
-      </div>
-
     </div>
   </div>
 </section>

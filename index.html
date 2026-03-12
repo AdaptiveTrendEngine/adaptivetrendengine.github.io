@@ -414,55 +414,154 @@
 
     /* ─── PRICING ───────────────────────────────────────────────── */
     #pricing { padding: 100px 0; background: var(--bg2); }
-    .pricing-inner { text-align: center; max-width: 480px; margin: 0 auto; }
+    .pricing-head { text-align: center; margin-bottom: 24px; }
+    .pricing-head .section-sub { margin: 14px auto 0; }
+
+    /* Free trial banner */
+    .trial-banner {
+      background: linear-gradient(135deg, rgba(0,232,136,.08), rgba(0,212,255,.06));
+      border: 1px solid rgba(0,232,136,.25);
+      border-radius: 14px; padding: 28px 36px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 24px; flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+    .trial-banner-left { flex: 1; min-width: 240px; }
+    .trial-banner-left h3 { font-size: 20px; font-weight: 700; }
+    .trial-banner-left p { font-size: 14px; color: var(--muted); margin-top: 6px; }
+    .trial-btn {
+      padding: 14px 28px;
+      background: linear-gradient(135deg, var(--green), #00b86e);
+      color: #000; font-size: 15px; font-weight: 700;
+      border: none; border-radius: 8px; cursor: pointer;
+      white-space: nowrap; transition: all .2s;
+      text-decoration: none; display: inline-block;
+    }
+    .trial-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,232,136,.35); }
+
+    /* Pricing grid */
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
     .pricing-card {
       background: var(--card);
-      border: 1px solid var(--border2);
-      border-radius: 16px; padding: 48px 40px;
-      position: relative; overflow: hidden; margin-top: 48px;
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 36px 32px;
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: border-color .25s, transform .25s;
     }
-    .pricing-card::before {
+    .pricing-card:hover { border-color: var(--border2); transform: translateY(-4px); }
+    .pricing-card.featured {
+      border-color: var(--cyan);
+      box-shadow: 0 0 40px rgba(0,212,255,.12);
+    }
+    .pricing-card.featured::before {
       content: '';
       position: absolute; top: 0; left: 0; right: 0; height: 3px;
       background: linear-gradient(90deg, var(--cyan), var(--green));
     }
     .pricing-badge {
       display: inline-block;
-      background: linear-gradient(135deg, rgba(251,191,36,.12), rgba(251,191,36,.05));
-      border: 1px solid rgba(251,191,36,.3);
-      color: var(--gold);
-      font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-      padding: 5px 14px; border-radius: 100px; margin-bottom: 24px;
+      font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      padding: 4px 12px; border-radius: 100px; margin-bottom: 20px;
+      width: fit-content;
     }
+    .badge-gold { background: rgba(251,191,36,.12); border: 1px solid rgba(251,191,36,.3); color: var(--gold); }
+    .badge-cyan { background: rgba(0,212,255,.12); border: 1px solid rgba(0,212,255,.3); color: var(--cyan); }
+    .badge-muted { background: rgba(136,146,176,.08); border: 1px solid rgba(136,146,176,.2); color: var(--muted); }
+    .plan-name { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 12px; }
     .price-amount {
-      font-size: 56px; font-weight: 900;
+      font-size: 48px; font-weight: 900;
       letter-spacing: -.04em; line-height: 1;
       background: linear-gradient(135deg, #fff, var(--cyan));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .price-period { font-size: 15px; color: var(--muted); margin-top: 8px; }
+    .price-period { font-size: 14px; color: var(--muted); margin-top: 6px; margin-bottom: 24px; }
     .price-features {
-      list-style: none; margin: 32px 0;
-      display: flex; flex-direction: column; gap: 14px;
-      text-align: left;
+      list-style: none; flex: 1;
+      display: flex; flex-direction: column; gap: 12px;
+      margin-bottom: 28px;
     }
     .price-features li {
-      display: flex; align-items: flex-start; gap: 12px;
-      font-size: 15px;
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 14px; color: var(--text);
     }
-    .price-features li .check {
-      color: var(--green); flex-shrink: 0; margin-top: 2px;
-    }
+    .price-features li .check { color: var(--green); flex-shrink: 0; margin-top: 1px; }
+    .price-features li .dim-feat { color: var(--muted); }
     .buy-btn {
-      width: 100%; padding: 18px;
+      width: 100%; padding: 16px;
+      font-size: 15px; font-weight: 700;
+      border: none; border-radius: 10px; cursor: pointer;
+      transition: all .2s; text-align: center;
+      text-decoration: none; display: block;
+    }
+    .buy-btn-primary {
       background: linear-gradient(135deg, var(--cyan), #0077ff);
-      color: #000; font-size: 16px; font-weight: 700;
+      color: #000;
+    }
+    .buy-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,212,255,.4); }
+    .buy-btn-outline {
+      background: transparent; border: 1px solid var(--border2);
+      color: var(--text);
+    }
+    .buy-btn-outline:hover { border-color: var(--cyan); color: var(--cyan); }
+    .price-note { font-size: 12px; color: var(--dim); margin-top: 12px; text-align: center; }
+
+    /* ─── TRIAL MODAL ───────────────────────────────────────────── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,.75); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 16px; padding: 40px;
+      width: 100%; max-width: 480px; margin: 0 16px;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 16px; right: 16px;
+      background: none; border: none; color: var(--muted);
+      font-size: 22px; cursor: pointer; line-height: 1;
+      transition: color .2s;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal h3 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .modal .modal-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 8px; }
+    .form-group input {
+      width: 100%; padding: 12px 16px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-size: 15px;
+      outline: none; transition: border-color .2s;
+    }
+    .form-group input:focus { border-color: var(--cyan); }
+    .form-group input::placeholder { color: var(--dim); }
+    .form-submit {
+      width: 100%; padding: 16px;
+      background: linear-gradient(135deg, var(--green), #00b86e);
+      color: #000; font-size: 15px; font-weight: 700;
       border: none; border-radius: 10px; cursor: pointer;
       transition: all .2s;
     }
-    .buy-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,212,255,.4); }
-    .price-note { font-size: 13px; color: var(--dim); margin-top: 16px; }
+    .form-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,232,136,.35); }
+    .form-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .form-note { font-size: 12px; color: var(--dim); text-align: center; margin-top: 12px; }
+    .form-success { text-align: center; padding: 20px 0; }
+    .form-success .success-icon { font-size: 48px; margin-bottom: 16px; }
+    .form-success h4 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .form-success p { font-size: 14px; color: var(--muted); }
+
+    @media (max-width: 768px) {
+      .pricing-grid { grid-template-columns: 1fr; }
+      .trial-banner { flex-direction: column; }
+    }
 
     /* ─── FAQ ───────────────────────────────────────────────────── */
     #faq { padding: 100px 0; }
@@ -796,34 +895,116 @@
 <!-- ═══ PRICING ══════════════════════════════════════════════════════ -->
 <section id="pricing">
   <div class="container">
-    <div class="pricing-inner">
-      <div class="reveal">
-        <div class="tag">Pricing</div>
-        <h2 class="section-title">One price. Full access.</h2>
-        <p class="section-sub">No monthly fees. No upsells. Get lifetime access to ATE on TradingView.</p>
+    <div class="pricing-head reveal">
+      <div class="tag">Pricing</div>
+      <h2 class="section-title">Start free. Scale when ready.</h2>
+      <p class="section-sub">Try ATE for a full month at no cost — no credit card required. Upgrade whenever you're ready.</p>
+    </div>
+
+    <!-- Free trial banner -->
+    <div class="trial-banner reveal">
+      <div class="trial-banner-left">
+        <h3>🎁 1-Month Free Trial</h3>
+        <p>Get full access to ATE on TradingView — no credit card, no commitment. Just your name, email, and TradingView username.</p>
       </div>
+      <button class="trial-btn" onclick="openTrialModal()">Start Free Trial →</button>
+    </div>
+
+    <!-- Paid plans -->
+    <div class="pricing-grid">
+
+      <!-- Monthly -->
       <div class="pricing-card reveal">
-        <div class="pricing-badge">⭐ Lifetime Access</div>
-        <div class="price-amount">₹4,999</div>
-        <div class="price-period">one-time payment · access never expires</div>
+        <div class="plan-name">Monthly</div>
+        <div class="pricing-badge badge-muted">Flexible</div>
+        <div class="price-amount">$20</div>
+        <div class="price-period">per month · cancel any time</div>
         <ul class="price-features">
-          <li><span class="check">✓</span> Adaptive Trend Engine indicator (TradingView)</li>
-          <li><span class="check">✓</span> Proprietary self-optimisation engine</li>
-          <li><span class="check">✓</span> Multi-timeframe live dashboard</li>
-          <li><span class="check">✓</span> Adaptive dynamic stop-loss</li>
-          <li><span class="check">✓</span> Instant TradingView alerts</li>
-          <li><span class="check">✓</span> Works on stocks, crypto, forex, futures</li>
-          <li><span class="check">✓</span> Priority support via email</li>
-          <li><span class="check">✓</span> All future updates included</li>
+          <li><span class="check">✓</span> Full ATE indicator (TradingView)</li>
+          <li><span class="check">✓</span> Self-optimising engine</li>
+          <li><span class="check">✓</span> Multi-timeframe dashboard</li>
+          <li><span class="check">✓</span> Dynamic stop-loss</li>
+          <li><span class="check">✓</span> All markets supported</li>
+          <li><span class="check">✓</span> Email support</li>
         </ul>
-        <a href="#" id="buy-btn" class="buy-btn" onclick="handleBuy(event)">
-          Get Instant Access →
-        </a>
-        <p class="price-note">You'll be redirected to a secure checkout. Access granted within minutes.</p>
+        <a href="#" class="buy-btn buy-btn-outline" onclick="handleBuy(event,'monthly')">Get Monthly Access →</a>
+        <p class="price-note">Billed monthly · cancel any time</p>
       </div>
+
+      <!-- Annual — Featured -->
+      <div class="pricing-card featured reveal">
+        <div class="plan-name">Annual</div>
+        <div class="pricing-badge badge-cyan">⭐ Best Value — Save 17%</div>
+        <div class="price-amount">$200</div>
+        <div class="price-period">per year · ~$16.67/mo</div>
+        <ul class="price-features">
+          <li><span class="check">✓</span> Full ATE indicator (TradingView)</li>
+          <li><span class="check">✓</span> Self-optimising engine</li>
+          <li><span class="check">✓</span> Multi-timeframe dashboard</li>
+          <li><span class="check">✓</span> Dynamic stop-loss</li>
+          <li><span class="check">✓</span> All markets supported</li>
+          <li><span class="check">✓</span> Priority email support</li>
+          <li><span class="check">✓</span> All updates for the year</li>
+        </ul>
+        <a href="#" class="buy-btn buy-btn-primary" onclick="handleBuy(event,'annual')">Get Annual Access →</a>
+        <p class="price-note">Billed annually · 2 months free vs monthly</p>
+      </div>
+
+      <!-- Lifetime -->
+      <div class="pricing-card reveal">
+        <div class="plan-name">Lifetime</div>
+        <div class="pricing-badge badge-gold">🔥 One-Time Forever</div>
+        <div class="price-amount">$2000</div>
+        <div class="price-period">one-time · access never expires</div>
+        <ul class="price-features">
+          <li><span class="check">✓</span> Full ATE indicator (TradingView)</li>
+          <li><span class="check">✓</span> Self-optimising engine</li>
+          <li><span class="check">✓</span> Multi-timeframe dashboard</li>
+          <li><span class="check">✓</span> Dynamic stop-loss</li>
+          <li><span class="check">✓</span> All markets supported</li>
+          <li><span class="check">✓</span> Lifetime priority support</li>
+          <li><span class="check">✓</span> All future updates forever</li>
+          <li><span class="check">✓</span> Never pay again</li>
+        </ul>
+        <a href="#" class="buy-btn buy-btn-outline" onclick="handleBuy(event,'lifetime')">Get Lifetime Access →</a>
+        <p class="price-note">One payment · access never expires</p>
+      </div>
+
     </div>
   </div>
 </section>
+
+<!-- ═══ TRIAL MODAL ═══════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="trial-modal" onclick="closeTrialModalOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeTrialModal()">✕</button>
+    <div id="trial-form-wrap">
+      <h3>Start Your Free Trial</h3>
+      <p class="modal-sub">1 month full access · no credit card · no commitment</p>
+      <form id="trial-form" onsubmit="submitTrial(event)">
+        <div class="form-group">
+          <label for="trial-name">Full Name</label>
+          <input type="text" id="trial-name" name="name" placeholder="Your name" required autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label for="trial-email">Email Address</label>
+          <input type="email" id="trial-email" name="email" placeholder="you@email.com" required autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="trial-tv">TradingView Username</label>
+          <input type="text" id="trial-tv" name="tradingview_username" placeholder="e.g. john_trader" required />
+        </div>
+        <button type="submit" class="form-submit" id="trial-submit">Request Free Trial →</button>
+        <p class="form-note">I'll manually share the indicator with your TradingView account within a few hours.</p>
+      </form>
+    </div>
+    <div id="trial-success" class="form-success" style="display:none">
+      <div class="success-icon">🎉</div>
+      <h4>You're on the list!</h4>
+      <p>I've received your request. You'll get full access to ATE on your TradingView account within a few hours. Check your email for confirmation.</p>
+    </div>
+  </div>
+</div>
 
 <!-- ═══ FAQ ══════════════════════════════════════════════════════════ -->
 <section id="faq">
@@ -1041,10 +1222,64 @@
   }
 
   /* ── Buy button ── */
-  function handleBuy(e) {
+  const PAYMENT_LINKS = {
+    monthly:  '', // e.g. 'https://buy.stripe.com/xxx' or Gumroad link
+    annual:   '',
+    lifetime: '',
+  };
+  function handleBuy(e, plan) {
     e.preventDefault();
-    // Replace with your actual payment link (Razorpay, Gumroad, etc.)
-    alert('Payment link coming soon! Contact @2yk on TradingView or GitHub to get access.');
+    const link = PAYMENT_LINKS[plan];
+    if (link) {
+      window.location.href = link;
+    } else {
+      alert('Payment link coming soon! Contact @2yk on TradingView or GitHub to get access.');
+    }
+  }
+
+  /* ── Trial modal ── */
+  function openTrialModal() {
+    document.getElementById('trial-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeTrialModal() {
+    document.getElementById('trial-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeTrialModalOutside(e) {
+    if (e.target === document.getElementById('trial-modal')) closeTrialModal();
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeTrialModal();
+  });
+
+  /* ── Trial form submission (Formspree) ── */
+  const FORMSPREE_ID = 'maqpovvl';
+
+  async function submitTrial(e) {
+    e.preventDefault();
+    const btn = document.getElementById('trial-submit');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    const form = document.getElementById('trial-form');
+    const data = new FormData(form);
+    try {
+      const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        document.getElementById('trial-form-wrap').style.display = 'none';
+        document.getElementById('trial-success').style.display = 'block';
+      } else {
+        throw new Error('Form submission failed');
+      }
+    } catch {
+      btn.disabled = false;
+      btn.textContent = 'Request Free Trial →';
+      alert('Something went wrong. Please email me directly at your-email@example.com');
+    }
   }
 
   /* ── Init ── */

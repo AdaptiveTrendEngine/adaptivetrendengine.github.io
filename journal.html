@@ -201,17 +201,16 @@
     }
     .export-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
     .export-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
-    .export-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-    .export-step { display: flex; align-items: flex-start; gap: 12px; font-size: 13px; color: var(--muted); }
-    .export-step .num { min-width: 22px; height: 22px; background: rgba(0,212,255,.08); border: 1px solid rgba(0,212,255,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--cyan); }
-    .code-block {
-      background: var(--bg); border: 1px solid var(--border2);
-      border-radius: 8px; padding: 16px;
-      font-family: 'JetBrains Mono', monospace; font-size: 12px;
-      color: var(--muted); white-space: pre; overflow-x: auto;
-      max-height: 300px; overflow-y: auto;
-      margin-top: 12px;
+    .export-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .import-label {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 18px; border-radius: 7px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      background: none; border: 1px solid var(--border2); color: var(--text);
+      transition: all .2s;
     }
+    .import-label:hover { border-color: var(--cyan); color: var(--cyan); }
+    .import-note { font-size: 12px; color: var(--dim); margin-top: 12px; }
 
     /* ── Modal ── */
     .modal-overlay {
@@ -278,7 +277,7 @@
       </div>
       <div class="header-actions">
         <a href="index.html" class="btn btn-ghost">← Public Site</a>
-        <button class="btn btn-ghost" onclick="exportJSON()">Export JSON</button>
+        <button class="btn btn-ghost" onclick="exportJSON()">⬇ Export JSON</button>
         <button class="btn btn-primary" onclick="showAddForm()">+ New Trade</button>
       </div>
     </div>
@@ -384,17 +383,18 @@
       </div>
     </div>
 
-    <!-- Export section -->
+    <!-- Export / Import section -->
     <div class="export-section">
-      <div class="export-title">📤 Publish to Website</div>
-      <div class="export-sub">Export your trades as <code>trades.json</code> and commit to GitHub to update the public performance page.</div>
-      <div class="export-steps">
-        <div class="export-step"><div class="num">1</div><span>Click <strong>Export JSON</strong> above to copy the JSON</span></div>
-        <div class="export-step"><div class="num">2</div><span>Paste over the content of <code>docs/trades.json</code> in your GitHub repo</span></div>
-        <div class="export-step"><div class="num">3</div><span>Commit the file — the public site updates automatically</span></div>
+      <div class="export-title">📂 Export &amp; Import</div>
+      <div class="export-sub">Export downloads <code>trades.json</code> for the public site. Import merges an existing file — useful when switching devices or browsers so you never lose old trades.</div>
+      <div class="export-actions">
+        <button class="btn btn-ghost" onclick="exportJSON()">⬇ Download trades.json</button>
+        <label class="import-label">
+          ⬆ Import trades.json
+          <input type="file" accept=".json,application/json" style="display:none" onchange="importJSON(this)" />
+        </label>
       </div>
-      <button class="btn btn-ghost" onclick="showJsonPreview()">Preview JSON</button>
-      <div class="code-block" id="json-preview" style="display:none"></div>
+      <p class="import-note">Import merges trades by date + symbol + entry — duplicates are skipped automatically.</p>
     </div>
   </main>
 </div>
@@ -673,19 +673,48 @@
 
   function exportJSON() {
     const json = JSON.stringify(buildJSON(), null, 2);
-    navigator.clipboard.writeText(json).then(() => {
-      toast('JSON copied to clipboard! Paste into docs/trades.json and commit.', 'green');
-    }).catch(() => {
-      showJsonPreview();
-      toast('Copy the JSON below manually.', 'cyan');
-    });
+    const blob = new Blob([json], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = 'trades.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('trades.json downloaded!', 'green');
   }
 
-  function showJsonPreview() {
-    const el = document.getElementById('json-preview');
-    const json = JSON.stringify(buildJSON(), null, 2);
-    el.textContent = json;
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  function importJSON(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target.result);
+        const incoming = Array.isArray(data) ? data : (data.trades || []);
+        if (!incoming.length) { toast('No trades found in file.', 'red'); return; }
+
+        // Dedup key: date + symbol + timeframe + direction + entry
+        const key = t => `${t.date}_${t.symbol}_${t.timeframe}_${t.direction}_${t.entry}`;
+        const existingKeys = new Set(trades.map(key));
+
+        let added = 0;
+        incoming.forEach(t => {
+          if (!existingKeys.has(key(t))) {
+            trades.push({ ...t, id: nextId() });
+            existingKeys.add(key(t));
+            added++;
+          }
+        });
+
+        saveData();
+        renderStats();
+        renderTable();
+        toast(`Imported ${added} new trade${added !== 1 ? 's' : ''} (${incoming.length - added} duplicates skipped).`, 'green');
+      } catch {
+        toast('Invalid JSON file.', 'red');
+      }
+      input.value = ''; // reset so same file can be re-imported
+    };
+    reader.readAsText(file);
   }
 
   /* ══════════════════════════════════════════

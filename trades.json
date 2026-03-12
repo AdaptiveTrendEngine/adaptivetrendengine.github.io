@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "last_updated": "2026-03-12",
+    "total_trades": 8,
+    "wins": 6,
+    "losses": 2,
+    "win_rate": 75.0
+  },
+  "trades": [
+    {
+      "id": 1,
+      "date": "2026-03-10",
+      "symbol": "NIFTY",
+      "timeframe": "1H",
+      "direction": "LONG",
+      "entry": 22450.50,
+      "exit": 22810.25,
+      "sl": 22280.00,
+      "pnl_pct": 1.60,
+      "result": "WIN",
+      "notes": "Clean HTF alignment, strong ADX breakout"
+    },
+    {
+      "id": 2,
+      "date": "2026-03-07",
+      "symbol": "BANKNIFTY",
+      "timeframe": "15m",
+      "direction": "SHORT",
+      "entry": 48320.00,
+      "exit": 47950.00,
+      "sl": 48520.00,
+      "pnl_pct": 0.77,
+      "result": "WIN",
+      "notes": "Daily trend alignment, SL never threatened"
+    },
+    {
+      "id": 3,
+      "date": "2026-03-05",
+      "symbol": "BTCUSD",
+      "timeframe": "4H",
+      "direction": "LONG",
+      "entry": 84200.00,
+      "exit": 86750.00,
+      "sl": 83100.00,
+      "pnl_pct": 3.03,
+      "result": "WIN",
+      "notes": "Weekly bull trend, 4H signal with strong RF combo"
+    },
+    {
+      "id": 4,
+      "date": "2026-03-03",
+      "symbol": "NIFTY",
+      "timeframe": "1H",
+      "direction": "LONG",
+      "entry": 22100.00,
+      "exit": 21920.00,
+      "sl": 21900.00,
+      "pnl_pct": -0.81,
+      "result": "LOSS",
+      "notes": "SL hit on sudden gap down — risk contained"
+    },
+    {
+      "id": 5,
+      "date": "2026-02-28",
+      "symbol": "EURUSD",
+      "timeframe": "1H",
+      "direction": "SHORT",
+      "entry": 1.0820,
+      "exit": 1.0762,
+      "sl": 1.0865,
+      "pnl_pct": 0.54,
+      "result": "WIN",
+      "notes": "Dollar strength, all TF alignment short"
+    },
+    {
+      "id": 6,
+      "date": "2026-02-25",
+      "symbol": "RELIANCE",
+      "timeframe": "Day",
+      "direction": "LONG",
+      "entry": 2980.00,
+      "exit": 3120.00,
+      "sl": 2890.00,
+      "pnl_pct": 4.70,
+      "result": "WIN",
+      "notes": "Swing trade, weekly trend bullish, great R:R"
+    },
+    {
+      "id": 7,
+      "date": "2026-02-21",
+      "symbol": "BANKNIFTY",
+      "timeframe": "15m",
+      "direction": "LONG",
+      "entry": 47200.00,
+      "exit": 46890.00,
+      "sl": 46850.00,
+      "pnl_pct": -0.66,
+      "result": "LOSS",
+      "notes": "Choppy session, cut loss quickly"
+    },
+    {
+      "id": 8,
+      "date": "2026-02-18",
+      "symbol": "ETHUSD",
+      "timeframe": "4H",
+      "direction": "LONG",
+      "entry": 2750.00,
+      "exit": 3010.00,
+      "sl": 2640.00,
+      "pnl_pct": 9.45,
+      "result": "WIN",
+      "notes": "Major trend reversal confirmed, held full target"
+    }
+  ]
+}

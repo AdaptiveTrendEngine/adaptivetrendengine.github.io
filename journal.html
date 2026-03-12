@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ATE Trading Journal</title>
-  <meta name="robots" content="noindex, nofollow" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <style>
@@ -27,43 +26,8 @@
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
     ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg); } ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
-    /* ── Lock Screen ── */
-    #lock-screen {
-      position: fixed; inset: 0; z-index: 999;
-      display: flex; align-items: center; justify-content: center;
-      background: var(--bg);
-    }
-    .lock-card {
-      background: var(--card); border: 1px solid var(--border2);
-      border-radius: 16px; padding: 48px 40px; width: 100%; max-width: 380px;
-      text-align: center;
-    }
-    .lock-icon { font-size: 40px; margin-bottom: 20px; }
-    .lock-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
-    .lock-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
-    .lock-input {
-      width: 100%; padding: 14px 16px;
-      background: var(--bg); border: 1px solid var(--border2);
-      border-radius: 8px; color: var(--text); font-size: 15px;
-      font-family: 'JetBrains Mono', monospace; letter-spacing: .1em;
-      outline: none; transition: border-color .2s;
-    }
-    .lock-input:focus { border-color: var(--cyan); }
-    .lock-btn {
-      width: 100%; margin-top: 14px; padding: 14px;
-      background: linear-gradient(135deg, var(--cyan), #0077ff);
-      color: #000; font-weight: 700; font-size: 15px;
-      border: none; border-radius: 8px; cursor: pointer;
-      transition: all .2s;
-    }
-    .lock-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,212,255,.3); }
-    .lock-err { color: var(--red); font-size: 13px; margin-top: 10px; min-height: 18px; }
-    .lock-hint { font-size: 12px; color: var(--dim); margin-top: 16px; }
-    .lock-set-btn { background: none; border: none; color: var(--cyan); font-size: 12px; cursor: pointer; text-decoration: underline; }
-
     /* ── Layout ── */
-    .app { display: none; }
-    .app.unlocked { display: block; }
+    .app { display: block; }
 
     header {
       padding: 20px 0;
@@ -251,22 +215,6 @@
 </head>
 <body>
 
-<!-- ── Lock Screen ── -->
-<div id="lock-screen">
-  <div class="lock-card">
-    <div class="lock-icon">🔐</div>
-    <div class="lock-title">ATE Trading Journal</div>
-    <div class="lock-sub">Enter your password to access the private journal.</div>
-    <input type="password" id="pwd-input" class="lock-input" placeholder="Password" autocomplete="current-password"
-      onkeydown="if(event.key==='Enter') unlock()" />
-    <button class="lock-btn" onclick="unlock()">Unlock Journal</button>
-    <p class="lock-err" id="lock-err"></p>
-    <p class="lock-hint">
-      First time? <button class="lock-set-btn" onclick="setPassword()">Set a new password</button>
-    </p>
-  </div>
-</div>
-
 <!-- ── App ── -->
 <div class="app" id="app">
 
@@ -405,43 +353,6 @@
 
 <script>
   /* ══════════════════════════════════════════
-     PASSWORD
-  ══════════════════════════════════════════ */
-  const PWD_KEY = 'ate_journal_pwd';
-
-  function hashPwd(pwd) {
-    // Simple non-cryptographic hash for local storage (not for server-side auth)
-    let h = 5381;
-    for (let i = 0; i < pwd.length; i++) h = ((h << 5) + h) ^ pwd.charCodeAt(i);
-    return (h >>> 0).toString(36);
-  }
-
-  function unlock() {
-    const pwd = document.getElementById('pwd-input').value;
-    const stored = localStorage.getItem(PWD_KEY);
-    if (!stored) {
-      document.getElementById('lock-err').textContent = 'No password set. Click "Set a new password" below.';
-      return;
-    }
-    if (hashPwd(pwd) === stored) {
-      document.getElementById('lock-screen').style.display = 'none';
-      document.getElementById('app').classList.add('unlocked');
-      init();
-    } else {
-      document.getElementById('lock-err').textContent = 'Incorrect password.';
-      document.getElementById('pwd-input').value = '';
-    }
-  }
-
-  function setPassword() {
-    const pwd = prompt('Set a new password for your journal:');
-    if (!pwd || pwd.trim().length < 4) { alert('Password must be at least 4 characters.'); return; }
-    localStorage.setItem(PWD_KEY, hashPwd(pwd));
-    toast('Password set! You can now unlock the journal.', 'green');
-    document.getElementById('lock-err').textContent = '';
-  }
-
-  /* ══════════════════════════════════════════
      DATA
   ══════════════════════════════════════════ */
   const STORE_KEY = 'ate_journal_trades';
@@ -469,9 +380,10 @@
     loadData();
     renderStats();
     renderTable();
-    // Set today's date as default
     document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
   }
+
+  init();
 
   /* ══════════════════════════════════════════
      STATS

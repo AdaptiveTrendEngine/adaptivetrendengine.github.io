@@ -101,6 +101,13 @@
     }
     .form-control:focus { border-color: var(--cyan); }
     select.form-control option { background: var(--bg2); }
+    .input-prefix { position: relative; }
+    .input-prefix .prefix {
+      position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 13px; pointer-events: none;
+      font-family: 'Inter', sans-serif;
+    }
+    .input-prefix .form-control { padding-left: 24px; }
     .form-actions { display: flex; gap: 10px; margin-top: 16px; justify-content: flex-end; }
 
     /* ── Filters ── */
@@ -139,13 +146,26 @@
     tbody td { padding: 13px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
     tbody tr:last-child td { border-bottom: none; }
     tbody tr:hover td { background: rgba(255,255,255,.015); }
-    .win-badge { color: var(--green); font-weight: 700; }
-    .loss-badge { color: var(--red); font-weight: 700; }
+    .win-badge  { color: var(--green); font-weight: 700; }
+    .loss-badge { color: var(--red);   font-weight: 700; }
+    .open-badge { color: var(--cyan);  font-weight: 700; }
     .long-dir { color: var(--green); font-weight: 600; }
     .short-dir { color: var(--red); font-weight: 600; }
     .pnl-pos { color: var(--green); font-family: 'JetBrains Mono', monospace; font-weight: 600; }
     .pnl-neg { color: var(--red);   font-family: 'JetBrains Mono', monospace; font-weight: 600; }
     .mono { font-family: 'JetBrains Mono', monospace; }
+    .note-cell { position: relative; cursor: default; }
+    .note-icon { color: var(--cyan); font-size: 13px; }
+    .note-tip {
+      display: none;
+      position: absolute; right: 0; top: calc(100% + 6px); z-index: 100;
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: 8px; padding: 10px 14px;
+      font-size: 12px; color: var(--text); line-height: 1.5;
+      white-space: normal; min-width: 180px; max-width: 280px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    }
+    .note-cell:hover .note-tip { display: block; }
     .action-btns { display: flex; gap: 6px; }
     .act-btn {
       padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 600;
@@ -266,26 +286,21 @@
         </div>
         <div class="form-group">
           <label>Entry Price</label>
-          <input type="number" id="f-entry" class="form-control" step="any" placeholder="0.00" />
-        </div>
-        <div class="form-group">
-          <label>Stop Loss</label>
-          <input type="number" id="f-sl" class="form-control" step="any" placeholder="0.00" />
+          <div class="input-prefix">
+            <span class="prefix">₹</span>
+            <input type="number" id="f-entry" class="form-control" step="any" placeholder="0.00" />
+          </div>
         </div>
         <div class="form-group">
           <label>Exit Price</label>
-          <input type="number" id="f-exit" class="form-control" step="any" placeholder="0.00" />
+          <div class="input-prefix">
+            <span class="prefix">₹</span>
+            <input type="number" id="f-exit" class="form-control" step="any" placeholder="0.00" />
+          </div>
         </div>
         <div class="form-group">
-          <label>P&amp;L %</label>
-          <input type="number" id="f-pnl" class="form-control" step="0.01" placeholder="Auto-calc" />
-        </div>
-        <div class="form-group">
-          <label>Result</label>
-          <select id="f-result" class="form-control">
-            <option value="WIN">Win</option>
-            <option value="LOSS">Loss</option>
-          </select>
+          <label>Quantity</label>
+          <input type="number" id="f-qty" class="form-control" step="any" placeholder="1" min="0" />
         </div>
         <div class="form-group form-full">
           <label>Notes</label>
@@ -319,7 +334,7 @@
           <thead>
             <tr>
               <th>Date</th><th>Symbol</th><th>TF</th><th>Dir</th>
-              <th>Entry</th><th>SL</th><th>Exit</th><th>P&amp;L%</th>
+              <th>Entry</th><th>Exit</th><th>Qty</th><th>P&amp;L%</th>
               <th>Result</th><th>Notes</th><th>Actions</th>
             </tr>
           </thead>
@@ -443,21 +458,42 @@
     document.getElementById('empty-state').style.display = 'none';
 
     document.getElementById('trade-rows').innerHTML = filtered.map(t => {
-      const pnlCls  = t.pnl_pct >= 0 ? 'pnl-pos' : 'pnl-neg';
-      const pnlSign = t.pnl_pct >= 0 ? '+' : '';
-      const pnlStr  = isNaN(t.pnl_pct) ? '—' : pnlSign + t.pnl_pct.toFixed(2) + '%';
+      const isOpen = t.exit == null || isNaN(t.exit) || t.entry == null || isNaN(t.entry);
+      let pnlCell, resultCell;
+      if (isOpen) {
+        pnlCell    = `<span class="open-badge">● OPEN</span>`;
+        resultCell = `<span class="open-badge">—</span>`;
+      } else {
+        const pnlPct = t.direction === 'LONG'
+          ? ((t.exit - t.entry) / t.entry) * 100
+          : ((t.entry - t.exit) / t.entry) * 100;
+        const sign = pnlPct >= 0 ? '+' : '';
+        const cls  = pnlPct >= 0 ? 'pnl-pos' : 'pnl-neg';
+        let absLine  = '';
+        if (t.qty != null && !isNaN(t.qty) && t.qty > 0) {
+          const absVal = pnlPct / 100 * t.entry * t.qty;
+          const absFmt = Math.abs(absVal) >= 1000
+            ? Math.abs(absVal).toLocaleString(undefined, { maximumFractionDigits: 0 })
+            : Math.abs(absVal).toFixed(2);
+          absLine = `<div style="font-size:11px;margin-top:1px">${sign}₹${absFmt}</div>`;
+        }
+        pnlCell    = `<span class="${cls}">${sign}${pnlPct.toFixed(2)}%${absLine}</span>`;
+        resultCell = `<span class="${t.result === 'WIN' ? 'win-badge' : 'loss-badge'}">${t.result === 'WIN' ? '✓ WIN' : '✗ LOSS'}</span>`;
+      }
       return `
         <tr>
           <td style="color:var(--muted);font-size:12px">${t.date}</td>
           <td><strong>${t.symbol}</strong></td>
           <td class="mono" style="font-size:12px;color:var(--muted)">${t.timeframe}</td>
           <td class="${t.direction === 'LONG' ? 'long-dir' : 'short-dir'}">${t.direction === 'LONG' ? '▲' : '▼'} ${t.direction}</td>
-          <td class="mono" style="font-size:12px">${fmt(t.entry)}</td>
-          <td class="mono" style="font-size:12px;color:var(--red)">${fmt(t.sl)}</td>
-          <td class="mono" style="font-size:12px">${fmt(t.exit)}</td>
-          <td class="${pnlCls}">${pnlStr}</td>
-          <td class="${t.result === 'WIN' ? 'win-badge' : 'loss-badge'}">${t.result === 'WIN' ? '✓ WIN' : '✗ LOSS'}</td>
-          <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:12px" title="${t.notes || ''}">${t.notes || '—'}</td>
+          <td class="mono" style="font-size:12px">₹${fmt(t.entry)}</td>
+          <td class="mono" style="font-size:12px">${t.exit != null && !isNaN(t.exit) ? '₹' + fmt(t.exit) : '—'}</td>
+          <td class="mono" style="font-size:12px;color:var(--muted)">${t.qty != null && !isNaN(t.qty) ? t.qty : '—'}</td>
+          <td>${pnlCell}</td>
+          <td>${resultCell}</td>
+          <td class="note-cell">${t.notes
+            ? `<span class="note-icon">📝</span><div class="note-tip">${t.notes.replace(/</g,'&lt;')}</div>`
+            : `<span style="color:var(--dim)">—</span>`}</td>
           <td>
             <div class="action-btns">
               <button class="act-btn act-edit" onclick="editTrade(${t.id})">Edit</button>
@@ -491,13 +527,12 @@
   }
 
   function clearForm() {
-    ['f-date','f-symbol','f-entry','f-sl','f-exit','f-pnl','f-notes'].forEach(id => {
+    ['f-date','f-symbol','f-entry','f-exit','f-qty','f-notes'].forEach(id => {
       document.getElementById(id).value = id === 'f-date'
         ? new Date().toISOString().split('T')[0] : '';
     });
-    document.getElementById('f-tf').value    = '1H';
-    document.getElementById('f-dir').value   = 'LONG';
-    document.getElementById('f-result').value = 'WIN';
+    document.getElementById('f-tf').value  = '1H';
+    document.getElementById('f-dir').value = 'LONG';
   }
 
   function editTrade(id) {
@@ -508,12 +543,10 @@
     document.getElementById('f-symbol').value = t.symbol;
     document.getElementById('f-tf').value     = t.timeframe;
     document.getElementById('f-dir').value    = t.direction;
-    document.getElementById('f-entry').value  = t.entry;
-    document.getElementById('f-sl').value     = t.sl;
-    document.getElementById('f-exit').value   = t.exit;
-    document.getElementById('f-pnl').value    = t.pnl_pct;
-    document.getElementById('f-result').value = t.result;
-    document.getElementById('f-notes').value  = t.notes || '';
+    document.getElementById('f-entry').value = t.entry;
+    document.getElementById('f-exit').value  = t.exit;
+    document.getElementById('f-qty').value   = t.qty ?? '';
+    document.getElementById('f-notes').value = t.notes || '';
     document.getElementById('form-title-text').textContent = '✏️ Edit Trade';
     document.getElementById('trade-form').style.display = 'block';
     document.getElementById('trade-form').scrollIntoView({ behavior: 'smooth' });
@@ -524,31 +557,26 @@
     const symbol = document.getElementById('f-symbol').value.trim().toUpperCase();
     const tf     = document.getElementById('f-tf').value;
     const dir    = document.getElementById('f-dir').value;
-    const entry  = parseFloat(document.getElementById('f-entry').value);
-    const sl     = parseFloat(document.getElementById('f-sl').value);
-    const exit   = parseFloat(document.getElementById('f-exit').value);
-    const result = document.getElementById('f-result').value;
-    const notes  = document.getElementById('f-notes').value.trim();
+    const entry = parseFloat(document.getElementById('f-entry').value);
+    const exit  = parseFloat(document.getElementById('f-exit').value);
+    const qty   = parseFloat(document.getElementById('f-qty').value);
+    const notes = document.getElementById('f-notes').value.trim();
 
     if (!date || !symbol || isNaN(entry)) {
       toast('Date, Symbol and Entry are required.', 'red'); return;
     }
 
-    // Auto-calc P&L if not provided
-    let pnl = parseFloat(document.getElementById('f-pnl').value);
-    if (isNaN(pnl) && !isNaN(exit) && !isNaN(entry) && entry > 0) {
-      pnl = dir === 'LONG'
-        ? ((exit - entry) / entry) * 100
-        : ((entry - exit) / entry) * 100;
-      pnl = parseFloat(pnl.toFixed(2));
-    }
+    const exitVal  = isNaN(exit) ? null : exit;
+    const result   = exitVal == null ? null
+      : (dir === 'LONG' ? (exitVal >= entry ? 'WIN' : 'LOSS')
+                        : (exitVal <= entry ? 'WIN' : 'LOSS'));
 
     if (editingId !== null) {
       const idx = trades.findIndex(t => t.id === editingId);
-      if (idx >= 0) trades[idx] = { id: editingId, date, symbol, timeframe: tf, direction: dir, entry, sl, exit, pnl_pct: pnl, result, notes };
+      if (idx >= 0) trades[idx] = { id: editingId, date, symbol, timeframe: tf, direction: dir, entry, exit: exitVal, qty: isNaN(qty) ? null : qty, result, notes };
       toast('Trade updated.', 'green');
     } else {
-      trades.push({ id: nextId(), date, symbol, timeframe: tf, direction: dir, entry, sl, exit, pnl_pct: pnl, result, notes });
+      trades.push({ id: nextId(), date, symbol, timeframe: tf, direction: dir, entry, exit: exitVal, qty: isNaN(qty) ? null : qty, result, notes });
       toast('Trade saved!', 'green');
     }
     saveData();
@@ -570,8 +598,18 @@
      EXPORT
   ══════════════════════════════════════════ */
   function buildJSON() {
-    const total = trades.length;
-    const wins  = trades.filter(t => t.result === 'WIN').length;
+    const closed  = trades.filter(t => t.exit != null);
+    const withPnl = trades.map(t => {
+      if (t.exit == null) return t;
+      const pnl_pct = t.direction === 'LONG'
+        ? parseFloat(((t.exit - t.entry) / t.entry * 100).toFixed(2))
+        : parseFloat(((t.entry - t.exit) / t.entry * 100).toFixed(2));
+      const result  = t.direction === 'LONG' ? (t.exit >= t.entry ? 'WIN' : 'LOSS')
+                                              : (t.exit <= t.entry ? 'WIN' : 'LOSS');
+      return { ...t, pnl_pct, result };
+    });
+    const total = closed.length;
+    const wins  = withPnl.filter(t => t.result === 'WIN').length;
     return {
       meta: {
         last_updated: new Date().toISOString().split('T')[0],
@@ -580,7 +618,7 @@
         losses: total - wins,
         win_rate: total ? parseFloat((wins / total * 100).toFixed(1)) : 0
       },
-      trades: trades.slice().sort((a, b) => new Date(b.date) - new Date(a.date))
+      trades: withPnl.slice().sort((a, b) => new Date(b.date) - new Date(a.date))
     };
   }
 
@@ -644,29 +682,6 @@
     toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
   }
 
-  /* ── Auto-calc PnL on exit input ── */
-  document.addEventListener('DOMContentLoaded', () => {
-    const calcPnl = () => {
-      const entry  = parseFloat(document.getElementById('f-entry').value);
-      const exit   = parseFloat(document.getElementById('f-exit').value);
-      const dir    = document.getElementById('f-dir').value;
-      const pnlEl  = document.getElementById('f-pnl');
-      if (!isNaN(entry) && !isNaN(exit) && entry > 0 && !pnlEl.dataset.manual) {
-        const pnl = dir === 'LONG'
-          ? ((exit - entry) / entry * 100).toFixed(2)
-          : ((entry - exit) / entry * 100).toFixed(2);
-        pnlEl.value = pnl;
-        // Auto-set result
-        document.getElementById('f-result').value = parseFloat(pnl) >= 0 ? 'WIN' : 'LOSS';
-      }
-    };
-    document.getElementById('f-exit').addEventListener('input', calcPnl);
-    document.getElementById('f-entry').addEventListener('input', calcPnl);
-    document.getElementById('f-dir').addEventListener('change', calcPnl);
-    document.getElementById('f-pnl').addEventListener('input', function() {
-      this.dataset.manual = this.value ? 'true' : '';
-    });
-  });
 </script>
 </body>
 </html>
